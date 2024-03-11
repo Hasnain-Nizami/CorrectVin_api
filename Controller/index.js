@@ -136,7 +136,7 @@ const capture = async (req, res) => {
     await capturedOrder.save();
     res.status(httpStatusCode).json(jsonResponse);
 
-    const mail = await fetch("http://localhost:5000/api/send-email", {
+    const mail = await fetch("https://real-jade-sea-urchin-tam.cyclic.app/api/send-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -153,7 +153,7 @@ const capture = async (req, res) => {
     });
 
 
-    const mailUs = await fetch("http://localhost:5000/api/send-email", {
+    const mailUs = await fetch("https://real-jade-sea-urchin-tam.cyclic.app/api/send-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
