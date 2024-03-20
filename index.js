@@ -3,8 +3,15 @@ import cors from "cors"
 import "dotenv/config";
 import router from "./Routes/routes.js";
 import mongoose from "mongoose";
-const  PORT = process.env.PORT || 5000
+
+
+
+
 const app = express();
+const  PORT = process.env.PORT || 5000
+
+
+
 
 // host static files
 app.use(express.static("client"));
@@ -13,7 +20,6 @@ app.use(express.static("client"));
 app.use(express.json());
 app.use(cors())
 app.use(router)
-
 
 
 

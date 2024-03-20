@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "nodemon --experimental-modules index.js"
   },
   "type": "module",
   "keywords": [],
@@ -21,6 +21,8 @@
     "mongoose": "^8.2.0",
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.10",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "puppeteer": "^22.5.0",
+    "socket.io": "^4.7.4"
   }
 }
