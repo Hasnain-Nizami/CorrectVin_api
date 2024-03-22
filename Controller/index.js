@@ -4,11 +4,13 @@ import jwt from "jsonwebtoken";
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, EMAIL_PASS, EMAIL_USER } =
   process.env;
 const base = "https://api-m.paypal.com";
+// const base = "https://sandbox.paypal.com";
+
 import nodemailer from "nodemailer";
 import { validationResult } from "express-validator";
 import CapturedOrder from "../Model/captureOrderSchema.js";
 import userModel from "../Model/userSchema.js";
-import { generatePDF, generateReceiptEmailHTML, generateTextEmailHTML, pswCompare } from "../utils/index.js";
+import { generateReceiptEmailHTML, generateTextEmailHTML, pswCompare } from "../utils/index.js";
 import mongoose from "mongoose";
 
 //************* generateAccessToken **************//
@@ -64,7 +66,7 @@ const createOrder = async (report) => {
       purchase_units: [
         {
           amount: {
-            currency_code: "USD",
+            currency_code: data.currency_code,
             value: data.price,
           },
         },
@@ -124,7 +126,7 @@ const order = async (req, res) => {
 const capture = async (req, res) => {
   try {
     const { orderID } = req.params;
-    const { values, report, price } = req.body;
+    const { values, report, price, symbol } = req.body;
     const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
 
     const capturedOrder = new CapturedOrder({
@@ -135,7 +137,6 @@ const capture = async (req, res) => {
     });
     await capturedOrder.save();
 
-    res.status(httpStatusCode).json(jsonResponse);
 
     const mail = await fetch("https://real-jade-sea-urchin-tam.cyclic.app/api/send-email", {
     // const mail = await fetch("http://localhost:5000/api/send-email", {
@@ -145,11 +146,12 @@ const capture = async (req, res) => {
       },
       body: JSON.stringify({
         from: `${EMAIL_USER}`,
-        subject: `Correct VIN Report Purchase Slip`,
+        subject: `CorrectVin Order Summary (Order# ${jsonResponse.id})`,
         to: values.email,
         userInfo: values,
         report,
         price,
+        symbol,
         orderId: jsonResponse.id,
         transactionId: jsonResponse.purchase_units[0].payments.captures[0].id,
         orderDate:
@@ -177,7 +179,10 @@ const capture = async (req, res) => {
         Region : ${values.region}
       `,
       }),
+      
     });
+    res.status(httpStatusCode).json(jsonResponse);
+
   } catch (error) {
     console.error("Failed to capture order:", error);
     res.status(500).json({ error: "Failed to capture order." });
@@ -199,6 +204,7 @@ const sendEmail = async (req, res) => {
       userInfo,
       report,
       price,
+      symbol,
       orderId,
       transactionId,
       orderDate,
@@ -215,7 +221,9 @@ const sendEmail = async (req, res) => {
 
 
     let mailOptions;
+    
     if (text) {
+      
       mailOptions = {
         from: process.env.EMAIL_USER,
         to: process.env.EMAIL_USER,
@@ -224,18 +232,12 @@ const sendEmail = async (req, res) => {
         html: generateTextEmailHTML(text),
       };
     } else {
-      const emailHTML = generateReceiptEmailHTML({ orderId, userInfo, transactionId, orderDate, paypalEmail, report, price });
-      const pdfBuffer = await generatePDF(emailHTML);
+      const emailHTML = generateReceiptEmailHTML({ orderId, userInfo, transactionId, orderDate, paypalEmail, report, price,symbol });
       mailOptions = {
         from: "Correct Vin <correctvin1@gmail.com>",
         to: `${to}`,
         subject: subject,
-        text: `correctvin.com Order Summary (Order# ${orderId})`,
-        attachments: [{
-          filename: `correctvin-order-${orderId}.pdf`,
-          content: pdfBuffer,
-          contentType: 'application/pdf',
-        }],
+        html:emailHTML
       };
     }
 

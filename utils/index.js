@@ -1,6 +1,5 @@
 import {body} from "express-validator"
 import bcrypt from "bcrypt"
-import puppeteer from "puppeteer";
 
 
 const validateEmailFields = [
@@ -34,7 +33,7 @@ const validateEmailFields = [
   };
  
 
-  const generateReceiptEmailHTML = ({ orderId, userInfo, transactionId, orderDate, paypalEmail, report, price }) => {
+  const generateReceiptEmailHTML = ({ orderId, userInfo, transactionId, orderDate, paypalEmail, report, price,symbol }) => {
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -152,17 +151,17 @@ const validateEmailFields = [
                                 <span style="color: #333;">${report}-Report x 1</span>
                             </div>
                         </td>
-                        <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">${price}$</td>
+                        <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">${symbol} ${price}</td>
                     </tr>
                     <tr>
                         <td style="padding: 10px; text-align: left; font-weight: bold; border: 1px solid #ddd;">Subtotal</td>
-                        <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">${price}$</td>
+                        <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">${symbol} ${price}</td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr>
                         <th style="padding: 10px; text-align: left; font-weight: bold; border: 1px solid #ddd;">Total</th>
-                        <td style="padding: 10px; text-align: right; font-weight: bold; border: 1px solid #ddd;">${price}$</td>
+                        <td style="padding: 10px; text-align: right; font-weight: bold; border: 1px solid #ddd;">${symbol} ${price}</td>
                     </tr>
                 </tfoot>
             </table>
@@ -178,19 +177,12 @@ const validateEmailFields = [
     `
   }
 
-  const generatePDF = async (htmlContent) => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setContent(htmlContent);
-    const pdfBuffer = await page.pdf({ format: 'A4' });
-    await browser.close();
-    return pdfBuffer;
-  };
+
+
 
   export {
     validateEmailFields,
     pswCompare,
     generateTextEmailHTML,
     generateReceiptEmailHTML,
-    generatePDF
   }
