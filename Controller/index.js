@@ -137,6 +137,7 @@ const capture = async (req, res) => {
     });
     await capturedOrder.save();
 
+    const emailTo = values.email.trim()
 
     const mail = await fetch("https://real-jade-sea-urchin-tam.cyclic.app/api/send-email", {
     // const mail = await fetch("http://localhost:5000/api/send-email", {
@@ -147,7 +148,7 @@ const capture = async (req, res) => {
       body: JSON.stringify({
         from: `${EMAIL_USER}`,
         subject: `CorrectVin Order Summary (Order# ${jsonResponse.id})`,
-        to: values.email,
+        to: emailTo,
         userInfo: values,
         report,
         price,
