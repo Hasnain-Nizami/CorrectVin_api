@@ -1,9 +1,9 @@
 import fetch from "node-fetch";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, EMAIL_PASS, EMAIL_USER } =
-  process.env;
-const base = "https://api-m.paypal.com";
+const { STRIPE_SECRET} = process.env;
+// const base = "https://api-m.paypal.com";
+
 // const base = "https://sandbox.paypal.com";
 
 import nodemailer from "nodemailer";
@@ -12,7 +12,8 @@ import CapturedOrder from "../Model/captureOrderSchema.js";
 import userModel from "../Model/userSchema.js";
 import { generateReceiptEmailHTML, generateTextEmailHTML, pswCompare } from "../utils/index.js";
 import mongoose from "mongoose";
-
+import Stripe from "stripe";
+const stripe = Stripe(STRIPE_SECRET)
 //************* generateAccessToken **************//
 
 const generateAccessToken = async () => {
@@ -209,7 +210,6 @@ const sendEmail = async (req, res) => {
       orderId,
       transactionId,
       orderDate,
-      paypalEmail,
     } = req.body;
 
     const transporter = nodemailer.createTransport({
@@ -233,7 +233,7 @@ const sendEmail = async (req, res) => {
         html: generateTextEmailHTML(text),
       };
     } else {
-      const emailHTML = generateReceiptEmailHTML({ orderId, userInfo, transactionId, orderDate, paypalEmail, report, price,symbol });
+      const emailHTML = generateReceiptEmailHTML({ orderId, userInfo, transactionId, orderDate, report, price,symbol });
       mailOptions = {
         from: "Correct Vin <correctvin1@gmail.com>",
         to: `${to}`,
@@ -356,6 +356,102 @@ const getSingleUser = async (req, res) => {
     });
   }
 };
+
+
+
+const stripeCheckout = async (req, res) => {
+  try {
+    const {
+      price,
+      payment_method,
+      card_holder_name,
+      customer_email,
+      customer_name,
+      currency,
+      report,
+      values,
+      code,
+      symbol
+    } = req.body;
+
+     // Create a customer
+     const customer = await stripe.customers.create({
+      email: customer_email,
+      name: customer_name,
+    });
+
+    // Create a payment intent
+    const intent = await stripe.paymentIntents.create({
+      amount: price.toFixed(0),
+      currency,
+      payment_method,
+      confirm: true,
+      description: `Payment from ${card_holder_name}`,
+      return_url: 'http://localhost:5173', // Replace with your desired success URL
+      receipt_email: customer_email, // Customer email for receipt
+      customer: customer.id, // Customer ID
+    });
+
+    
+    const capturedOrder = new CapturedOrder({
+      orderID : customer.id,
+      jsonResponse : intent,
+      httpStatusCode : 201,
+      userProvidedData: values,
+    });
+    await capturedOrder.save();
+
+    const emailTo = values.email.trim()
+
+    const mail = await fetch("https://real-jade-sea-urchin-tam.cyclic.app/api/send-email", {
+    // const mail = await fetch("http://localhost:5000/api/send-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: `${EMAIL_USER}`,
+        subject: `CorrectVin Order Summary (Order# ${customer.id})`,
+        to: emailTo,
+        userInfo: values,
+        report,
+        price: (price / 100),
+        symbol,
+        orderId: customer.id,
+        transactionId: intent.id,
+        orderDate:
+          intent.created,
+      }),
+    });
+
+    const mailUs = await fetch("https://real-jade-sea-urchin-tam.cyclic.app/api/send-email", {
+    // const mailUs = await fetch("http://localhost:5000/api/send-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: `${EMAIL_USER}`,
+        to: `${EMAIL_USER}`,
+        subject: `Report Purchase By ${values.firstName} ${values.lastName}`,
+        text: `
+        NAME : ${values.firstName} ${values.lastName}.
+        EMAIL : ${values.email}.
+        Contact: ${values.phoneNumber}.
+        VinNumber: ${values.vinNumber}.
+        Country: ${values.country}.
+        Region : ${values.region}
+      `,
+      }),
+      
+    });
+
+    // Payment successful
+    res.status(200).json({ success: true, message: "Payment successful", intent });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
 export {
   generateAccessToken,
   handleResponse,
@@ -367,4 +463,5 @@ export {
   userLogin,
   getAllUsers,
   getSingleUser,
+  stripeCheckout
 };

@@ -33,7 +33,7 @@ const validateEmailFields = [
   };
  
 
-  const generateReceiptEmailHTML = ({ orderId, userInfo, transactionId, orderDate, paypalEmail, report, price,symbol }) => {
+  const generateReceiptEmailHTML = ({ orderId, userInfo, transactionId, orderDate, report, price,symbol }) => {
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -128,8 +128,7 @@ const validateEmailFields = [
             <ul">
                 <li><strong>Order Date:</strong> ${new Date(orderDate).toLocaleString()}</li>
                 <li><strong>Order Id:</strong> ${orderId}</li>
-                <li><strong>Payment Source:</strong> Paypal</li>
-                <li><strong>Paypal Email:</strong> ${paypalEmail}</li>
+                <li><strong>Payment Source:</strong>Card</li>
                 <li><strong>Full Name:</strong> ${userInfo?.firstName} ${userInfo?.lastName}</li>
                 <li><strong>VIN Number:</strong> ${userInfo?.vinNumber}</li>
                 <li><strong>Phone Number:</strong> ${userInfo?.phoneNumber}</li>
