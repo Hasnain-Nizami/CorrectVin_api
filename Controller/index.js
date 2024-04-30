@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-const { STRIPE_SECRET} = process.env;
+const { STRIPE_SECRET, EMAIL_USER , EMAIL_PASS} = process.env;
 // const base = "https://api-m.paypal.com";
 
 // const base = "https://sandbox.paypal.com";
