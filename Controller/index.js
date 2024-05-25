@@ -393,16 +393,6 @@ const stripeCheckout = async (req, res) => {
     });
 
     
-      // Confirm the payment intent
-    const confirmedIntent = await stripe.paymentIntents.confirm(intent.id, {
-      payment_method,
-      return_url: 'http://localhost:5173', // Replace with your desired success URL
-    });
-
-
-    if (confirmedIntent.status !== 'succeeded') {
-      res.status(400).json({ success: false, message: `Payment failed with status: ${confirmedIntent.status}` });
-    }
 
     const capturedOrder = new CapturedOrder({
       orderID : customer.id,
