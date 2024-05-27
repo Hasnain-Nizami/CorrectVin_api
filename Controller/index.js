@@ -162,6 +162,8 @@ const capture = async (req, res) => {
       }),
     });
 
+
+
     const mailUs = await fetch("https://correctvin-api.onrender.com/api/send-email", {
     // const mailUs = await fetch("http://localhost:5000/api/send-email", {
       method: "POST",
