@@ -237,7 +237,7 @@ const sendEmail = async (req, res) => {
     } else {
       const emailHTML = generateReceiptEmailHTML({ orderId, userInfo, transactionId, orderDate, report, price,symbol });
       mailOptions = {
-        from: "Correct Vin <correctvin1@gmail.com>",
+        from: "Correct Vin <customersupports@correctvin.com>",
         to: `${to}`,
         subject: subject,
         html:emailHTML
