@@ -465,6 +465,6 @@ export {
   sendEmail,
   userLogin,
   getAllUsers,
-  stripeCheckout
-  getSingleUser,
+  stripeCheckout,
+  getSingleUser
 };
