@@ -126,9 +126,9 @@ const validateEmailFields = [
             <p style="color: #333; line-height: 1.6;">Dear ${userInfo?.firstName} ${userInfo?.lastName},</p>
             <p style="color: #333; line-height: 1.6;">We want to inform you that the payment for the recent transaction <strong>Transaction ID: ${transactionId}</strong> has been successfully processed. Your report will be delivered to your email within the next 12 hours.</p>
             <ul">
-                <li><strong>Order Date:</strong> ${new Date(orderDate * 1000).toLocaleString()}</li>
+                <li><strong>Order Date:</strong> ${new Date(orderDate).toLocaleString()}</li>
                 <li><strong>Order Id:</strong> ${orderId}</li>
-                <li><strong>Payment Source:</strong>Card</li>
+                <li><strong>Payment Source:</strong>Paypal</li>
                 <li><strong>Full Name:</strong> ${userInfo?.firstName} ${userInfo?.lastName}</li>
                 <li><strong>VIN Number:</strong> ${userInfo?.vinNumber}</li>
                 <li><strong>Phone Number:</strong> ${userInfo?.phoneNumber}</li>

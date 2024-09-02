@@ -1,10 +1,10 @@
 import fetch from "node-fetch";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-const { STRIPE_SECRET, EMAIL_USER , EMAIL_PASS} = process.env;
-// const base = "https://api-m.paypal.com";
+const { STRIPE_SECRET, EMAIL_USER , EMAIL_PASS, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET} = process.env;
+const base = "https://api-m.paypal.com";
 
-// const base = "https://sandbox.paypal.com";
+// const base = "https://api-m.sandbox.paypal.com";
 
 import nodemailer from "nodemailer";
 import { validationResult } from "express-validator";
@@ -31,8 +31,11 @@ const generateAccessToken = async () => {
         Authorization: `Basic ${auth}`,
       },
     });
-
+    
+    
     const data = await response.json();
+    
+    
     return data.access_token;
   } catch (error) {
     console.error("Failed to generate Access Token:", error);
@@ -60,6 +63,7 @@ const createOrder = async (report) => {
   const data = report[0];
   try {
     // use the cart information passed from the front-end to calculate the purchase unit details
+    
     const accessToken = await generateAccessToken();
     const url = `${base}/v2/checkout/orders`;
     const payload = {
@@ -118,7 +122,8 @@ const order = async (req, res) => {
     const { jsonResponse, httpStatusCode } = await createOrder(report);
     res.status(httpStatusCode).json(jsonResponse);
   } catch (error) {
-    res.status(500).json({ error: "Failed to create order." });
+    res.status(500).json({ error: "Failed to create order." })
+    
   }
 };
 
@@ -140,8 +145,8 @@ const capture = async (req, res) => {
 
     const emailTo = values.email.trim()
 
-    const mail = await fetch("https://correctvin-api.onrender.com/api/send-email", {
-    // const mail = await fetch("http://localhost:5000/api/send-email", {
+    // const mail = await fetch("https://correctvin-api.onrender.com/api/send-email", {
+    const mail = await fetch("http://localhost:5000/api/send-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -164,8 +169,8 @@ const capture = async (req, res) => {
 
 
 
-    const mailUs = await fetch("https://correctvin-api.onrender.com/api/send-email", {
-    // const mailUs = await fetch("http://localhost:5000/api/send-email", {
+    // const mailUs = await fetch("https://correctvin-api.onrender.com/api/send-email", {
+    const mailUs = await fetch("http://localhost:5000/api/send-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
