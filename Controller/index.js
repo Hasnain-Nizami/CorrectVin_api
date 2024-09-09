@@ -146,7 +146,7 @@ const capture = async (req, res) => {
 
     const emailTo = values.email.trim()
 
-    const mail = await fetch("https://correctvinapi-production.up.railway.app/api/send-email", {
+    const mail = await fetch("https://correctvinapi-production-b95b.up.railway.app/api/send-email", {
     // const mail = await fetch("http://localhost:5000/api/send-email", {
       method: "POST",
       headers: {
@@ -170,7 +170,7 @@ const capture = async (req, res) => {
 
 
 
-    const mailUs = await fetch("https://correctvinapi-production.up.railway.app/api/send-email", {
+    const mailUs = await fetch("https://correctvinapi-production-b95b.up.railway.app/api/send-email", {
     // const mailUs = await fetch("http://localhost:5000/api/send-email", {
       method: "POST",
       headers: {
