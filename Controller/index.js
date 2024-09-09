@@ -146,8 +146,8 @@ const capture = async (req, res) => {
 
     const emailTo = values.email.trim()
 
-    // const mail = await fetch("https://correctvin-api.onrender.com/api/send-email", {
-    const mail = await fetch("http://localhost:5000/api/send-email", {
+    const mail = await fetch("https://correctvinapi-production.up.railway.app/api/send-email", {
+    // const mail = await fetch("http://localhost:5000/api/send-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -170,8 +170,8 @@ const capture = async (req, res) => {
 
 
 
-    // const mailUs = await fetch("https://correctvin-api.onrender.com/api/send-email", {
-    const mailUs = await fetch("http://localhost:5000/api/send-email", {
+    const mailUs = await fetch("https://correctvinapi-production.up.railway.app/api/send-email", {
+    // const mailUs = await fetch("http://localhost:5000/api/send-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
