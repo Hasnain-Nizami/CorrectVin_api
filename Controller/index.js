@@ -18,6 +18,7 @@ const stripe = Stripe(STRIPE_SECRET)
 
 const generateAccessToken = async () => {
   try {
+    
     if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
       throw new Error("MISSING_API_CREDENTIALS");
     }
